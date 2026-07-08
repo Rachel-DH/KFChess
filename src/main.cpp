@@ -7,6 +7,18 @@
 
 using namespace std;
 
+static bool isValidToken(const string &tok)
+{
+    if (tok == ".")
+        return true;
+    if (tok.size() != 2)
+        return false;
+    if (tok[0] != 'w' && tok[0] != 'b')
+        return false;
+    static const string pieces = "KQRBNP";
+    return pieces.find(tok[1]) != string::npos;
+}
+
 struct MoveAnimation {
     bool active = false;
     int from_r, from_c;
@@ -231,6 +243,28 @@ int main()
         istringstream iss(line);
         while (iss >> token) row.push_back(token);
         if (!row.empty()) board.push_back(row);
+    }
+
+    size_t width = board.empty() ? 0 : board[0].size();
+    for (const auto &row : board)
+    {
+        if (row.size() != width)
+        {
+            cout << "ERROR ROW_WIDTH_MISMATCH\n";
+            return 0;
+        }
+    }
+
+    for (const auto &row : board)
+    {
+        for (const auto &tok : row)
+        {
+            if (!isValidToken(tok))
+            {
+                cout << "ERROR UNKNOWN_TOKEN\n";
+                return 0;
+            }
+        }
     }
 
     if (!board.empty()) {
